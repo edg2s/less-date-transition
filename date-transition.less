@@ -1,0 +1,29 @@
+.transitionByDate( @startYear, @startMonth, @startDay, @endYear, @endMonth, @endDay, @prop, @startVal, @endVal ) {
+	@currentTime: `new Date().getTime()`;
+	@start: `new Date(@{startYear}, @{startMonth} - 1, @{startDay}).getTime()`;
+	@end: `new Date(@{endYear}, @{endMonth} - 1, @{endDay}).getTime()`;
+
+	// How far along the transition you are, from 0-99 (capped)
+	// We'd use a decimal here, but LESS doesn't support
+	// casting strings (from the JS) to numbers :(
+	@digits: `Math.round( 99 * Math.max(
+		Math.min(
+				( @{currentTime} - @{start} ) / ( @{end} - @{start} ), 1
+		), 0
+	) )`;
+
+	// HACK: Convert two digit string to number
+	@sdigit1: `Math.floor( @{digits} / 10 )`;
+	@sdigit2: `@{digits} % 10`;
+
+	@n0: 0; @n1: 1; @n2: 2; @n3: 3; @n4: 4;
+	@n5: 5; @n6: 6; @n7: 7; @n8: 8; @n9: 9;
+
+	@digit1: `"n" + @{sdigit1}`;
+	@digit2: `"n" + @{sdigit2}`;
+
+	// Same as @digits, but a number instead of a string
+	@position: ( @@digit1 * 10 ) + @@digit2;
+
+	@{prop}: @startVal + ( ( @position / 99 ) * ( @endVal - @startVal ) );
+}
